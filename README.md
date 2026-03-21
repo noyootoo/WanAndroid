@@ -41,23 +41,18 @@ com.example.wanandroid
 └── ...           # Activity/Fragment 等 UI 层组件
 ```
 
-## 运行截图
-
-<table>
-  <tr>
-    <td><img src="screenshots/home.png" width="250" alt="首页"/></td>
-    <td><img src="screenshots/system.png" width="250" alt="体系页"/></td>
-    <td><img src="screenshots/search.png" width="250" alt="搜索页"/></td>
-  </tr>
-  <tr>
-    <td><img src="screenshots/detail.png" width="250" alt="详情页"/></td>
-    <td><img src="screenshots/mine.png" width="250" alt="我的页"/></td>
-    <td></td>
-  </tr>
-</table>
-
 ## 运行与编译
 
 - Android Studio Koala 或更高版本。
 - Gradle 8.0+。
 - Kotlin 1.9.0+。
+
+## 项目截图
+
+<div align="center">
+  <img src="screenshots/home.png" width="30%" />
+  <img src="screenshots/system.png" width="30%" />
+  <img src="screenshots/detail.png" width="30%" />
+  <img src="screenshots/search.png" width="30%" />
+  <img src="screenshots/mine.png" width="30%" />
+</div>
