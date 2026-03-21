@@ -49,10 +49,17 @@ com.example.wanandroid
 
 ## 项目截图
 
-<div align="center">
-  <img src="screenshots/home.png" width="30%" />
-  <img src="screenshots/system.png" width="30%" />
-  <img src="screenshots/detail.png" width="30%" />
-  <img src="screenshots/search.png" width="30%" />
-  <img src="screenshots/mine.png" width="30%" />
-</div>
+### 首页
+![首页](screenshots/home.png)
+
+### 体系页
+![体系页](screenshots/system.png)
+
+### 搜索页
+![搜索页](screenshots/search.png)
+
+### 我的页面
+![我的页面](screenshots/mine.png)
+
+### 详情页
+![详情页](screenshots/detail.png)
