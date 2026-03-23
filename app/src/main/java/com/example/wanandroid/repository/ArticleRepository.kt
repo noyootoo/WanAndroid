@@ -38,7 +38,14 @@ class ArticleRepository {
                 // 🌟 新增：业务级错误判断
                 if (response.errorCode == 0 && response.data != null) {
                     val articles = response.data.datas
-                    val entities = articles.map { it.toEntity() }
+                    
+                    // 计算基础索引。如果是刷新（page == 0），从 0 开始。
+                    // 假设每页固定 20 条，通过 page * 20 加上当前项的 index 来保证全局顺序
+                    // 注意 WanAndroid 首页分页是从 0 开始的
+                    val baseIndex = page * 20
+                    val entities = articles.mapIndexed { index, article -> 
+                        article.toEntity(baseIndex + index) 
+                    }
                     
                     if (isRefresh) {
                         // 如果是刷新，先清空旧数据

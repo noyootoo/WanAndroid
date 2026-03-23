@@ -18,12 +18,13 @@ data class ArticleEntity(
     val envelopePic: String,
     val collect: Boolean,
     val isRead: Boolean,
-    // 记录插入时间，以便后续排序（因为网络数据是有序的）
-    val insertTime: Long = System.currentTimeMillis()
+    // 修改：记录插入时的自增索引，因为 System.currentTimeMillis() 在批量插入时可能相同，导致排序混乱
+    @androidx.room.ColumnInfo(name = "insert_index")
+    val insertIndex: Int = 0
 )
 
-// 转换扩展方法
-fun Article.toEntity() = ArticleEntity(
+// 转换扩展方法，新增一个参数用于传递索引
+fun Article.toEntity(index: Int = 0) = ArticleEntity(
     id = this.id,
     title = this.title,
     author = this.author ?: "",
@@ -34,7 +35,8 @@ fun Article.toEntity() = ArticleEntity(
     chapterName = this.chapterName ?: "",
     envelopePic = this.envelopePic,
     collect = this.collect,
-    isRead = this.isRead
+    isRead = this.isRead,
+    insertIndex = index
 )
 
 fun ArticleEntity.toModel() = Article(

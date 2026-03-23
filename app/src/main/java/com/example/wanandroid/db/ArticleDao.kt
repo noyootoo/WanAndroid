@@ -13,8 +13,8 @@ interface ArticleDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(articles: List<ArticleEntity>)
 
-    // 获取所有文章，返回 Flow 响应式数据，按照插入时间升序（保证第一页在最上面，后续页在下面）
-    @Query("SELECT * FROM articles ORDER BY insertTime ASC")
+    // 获取所有文章，返回 Flow 响应式数据，按照插入索引升序排序（保证和网络返回的顺序完全一致）
+    @Query("SELECT * FROM articles ORDER BY insert_index ASC")
     fun getAllArticlesFlow(): Flow<List<ArticleEntity>>
 
     // 清空文章表

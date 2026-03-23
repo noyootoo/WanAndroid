@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.wanandroid.WanApplication
 
-@Database(entities = [ArticleEntity::class], version = 1, exportSchema = false)
+@Database(entities = [ArticleEntity::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun articleDao(): ArticleDao
@@ -21,7 +21,9 @@ abstract class AppDatabase : RoomDatabase() {
                     WanApplication.context,
                     AppDatabase::class.java,
                     "wanandroid_database"
-                ).build()
+                )
+                .fallbackToDestructiveMigration() // 允许破坏性迁移，直接重建表
+                .build()
                 INSTANCE = instance
                 instance
             }
