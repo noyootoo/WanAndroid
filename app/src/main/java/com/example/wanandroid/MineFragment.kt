@@ -40,7 +40,7 @@ class MineFragment : Fragment() {
             } else {
                 LoginActivity.start(requireContext())
             }
-        }
+        }//修改点1:如果用户名就叫点击登录,会重复触发登录(bug)
         
         binding.tvLogout.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
