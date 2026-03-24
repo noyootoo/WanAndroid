@@ -39,20 +39,18 @@ class ArticleRepository {
                 if (response.errorCode == 0 && response.data != null) {
                     val articles = response.data.datas
                     
+                    // 计算基础索引。如果是刷新（page == 0），从 0 开始。
+                    // 假设每页固定 20 条，通过 page * 20 加上当前项的 index 来保证全局顺序
+                    // 注意 WanAndroid 首页分页是从 0 开始的
+                    val baseIndex = page * 20
+                    val entities = articles.mapIndexed { index, article -> 
+                        article.toEntity(baseIndex + index) 
+                    }
+                    
                     if (isRefresh) {
                         // 如果是刷新，先清空旧数据
                         articleDao.clearAll()
                     }
-                    
-                    // 获取当前数据库中最大的 insert_index
-                    // 如果是刷新（刚才被 clearAll 了）或者原本就为空，getMaxInsertIndex 会返回 null，此时我们从 0 开始
-                    val currentMaxIndex = articleDao.getMaxInsertIndex() ?: -1
-                    
-                    // 新数据的索引严格在当前最大索引基础上累加
-                    val entities = articles.mapIndexed { index, article -> 
-                        article.toEntity(currentMaxIndex + 1 + index) 
-                    }
-                    
                     // 将新数据存入数据库
                     articleDao.insertAll(entities)
                     

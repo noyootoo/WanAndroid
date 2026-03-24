@@ -21,10 +21,6 @@ interface ArticleDao {
     @Query("DELETE FROM articles")
     suspend fun clearAll()
 
-    // 获取当前表中最大的插入索引
-    @Query("SELECT MAX(insert_index) FROM articles")
-    suspend fun getMaxInsertIndex(): Int?
-
     // 更新某篇文章的已读状态
     @Query("UPDATE articles SET isRead = :isRead WHERE id = :id")
     suspend fun updateReadStatus(id: Int, isRead: Boolean)
