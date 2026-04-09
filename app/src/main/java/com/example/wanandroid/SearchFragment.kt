@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wanandroid.adapter.ArticleAdapter
@@ -63,35 +65,39 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
 
     private fun observeUiState() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect { state ->
-                when (state) {
-                    is UiState.Loading -> {
-                        showLoading()
-                    }
-                    is UiState.Success -> {
-                        hideLoading()
-                        if (state.data.isEmpty()) {
-                            showEmptyState()
-                        } else {
-                            hideStateLayout()
-                        }
-                        adapter.submitList(state.data)
-                    }
-                    is UiState.Error -> {
-                        hideLoading()
-                        if (state.message == "没有找到相关文章") {
-                            adapter.submitList(emptyList())
-                            showEmptyState("没有找到相关文章")
-                        } else {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    when (state) {
+                        is UiState.Loading -> {
                             if (adapter.currentList.isEmpty()) {
-                                showErrorState("加载失败，点击重试") {
-                                    val keyword = binding.etSearch.text.toString()
-                                    if (keyword.isNotEmpty()) {
-                                        viewModel.search(keyword)
-                                    }
-                                }
+                                showLoading()
+                            }
+                        }
+                        is UiState.Success -> {
+                            hideLoading()
+                            if (state.data.isEmpty()) {
+                                showEmptyState()
                             } else {
-                                showToast(state.message)
+                                hideStateLayout()
+                            }
+                            adapter.submitList(state.data)
+                        }
+                        is UiState.Error -> {
+                            hideLoading()
+                            if (state.message == "没有找到相关文章") {
+                                adapter.submitList(emptyList())
+                                showEmptyState("没有找到相关文章")
+                            } else {
+                                if (adapter.currentList.isEmpty()) {
+                                    showErrorState("加载失败，点击重试") {
+                                        val keyword = binding.etSearch.text.toString()
+                                        if (keyword.isNotEmpty()) {
+                                            viewModel.search(keyword)
+                                        }
+                                    }
+                                } else {
+                                    showToast(state.message)
+                                }
                             }
                         }
                     }

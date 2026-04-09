@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.wanandroid.databinding.FragmentMineBinding
 import com.example.wanandroid.utils.DataStoreManager
 import kotlinx.coroutines.flow.collectLatest
@@ -51,17 +53,19 @@ class MineFragment : Fragment() {
         
         // 观察用户名变化
         viewLifecycleOwner.lifecycleScope.launch {
-            DataStoreManager.usernameFlow.collectLatest { username ->
-                if (username.isNotEmpty()) {
-                    binding.tvUsername.text = username
-                    binding.tvCoinInfo.text = "欢迎回来"
-                    binding.tvLogout.visibility = View.VISIBLE
-                    binding.vLogoutDivider.visibility = View.VISIBLE
-                } else {
-                    binding.tvUsername.text = "点击登录"
-                    binding.tvCoinInfo.text = "登录后体验更多功能"
-                    binding.tvLogout.visibility = View.GONE
-                    binding.vLogoutDivider.visibility = View.GONE
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                DataStoreManager.usernameFlow.collectLatest { username ->
+                    if (username.isNotEmpty()) {
+                        binding.tvUsername.text = username
+                        binding.tvCoinInfo.text = "欢迎回来"
+                        binding.tvLogout.visibility = View.VISIBLE
+                        binding.vLogoutDivider.visibility = View.VISIBLE
+                    } else {
+                        binding.tvUsername.text = "点击登录"
+                        binding.tvCoinInfo.text = "登录后体验更多功能"
+                        binding.tvLogout.visibility = View.GONE
+                        binding.vLogoutDivider.visibility = View.GONE
+                    }
                 }
             }
         }

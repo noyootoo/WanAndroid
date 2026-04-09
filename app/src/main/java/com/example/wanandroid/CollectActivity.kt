@@ -6,7 +6,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wanandroid.adapter.ArticleAdapter
@@ -75,23 +77,25 @@ class CollectActivity : AppCompatActivity() {
 
     private fun observeUiState() {
         lifecycleScope.launch {
-            viewModel.uiState.collect { state ->
-                if (state !is UiState.Loading) {
-                    binding.swipeRefresh.isRefreshing = false
-                    binding.progressBar.visibility = View.GONE
-                }
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    if (state !is UiState.Loading) {
+                        binding.swipeRefresh.isRefreshing = false
+                        binding.progressBar.visibility = View.GONE
+                    }
 
-                when (state) {
-                    is UiState.Loading -> {
-                        if (!binding.swipeRefresh.isRefreshing) {
-                            binding.progressBar.visibility = View.VISIBLE
+                    when (state) {
+                        is UiState.Loading -> {
+                            if (!binding.swipeRefresh.isRefreshing) {
+                                binding.progressBar.visibility = View.VISIBLE
+                            }
                         }
-                    }
-                    is UiState.Success -> {
-                        adapter.submitList(state.data)
-                    }
-                    is UiState.Error -> {
-                        Toast.makeText(this@CollectActivity, state.message, Toast.LENGTH_SHORT).show()
+                        is UiState.Success -> {
+                            adapter.submitList(state.data)
+                        }
+                        is UiState.Error -> {
+                            Toast.makeText(this@CollectActivity, state.message, Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }

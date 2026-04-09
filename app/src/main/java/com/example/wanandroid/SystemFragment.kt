@@ -6,9 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.wanandroid.adapter.SystemAdapter
 import com.example.wanandroid.base.BaseFragment
@@ -36,34 +37,36 @@ class SystemFragment : BaseFragment<FragmentSystemBinding>(FragmentSystemBinding
     override fun initObserver() {
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect { state ->
-                if (state !is UiState.Loading) {
-                    binding.swipeRefresh.isRefreshing = false
-                }
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    if (state !is UiState.Loading) {
+                        binding.swipeRefresh.isRefreshing = false
+                    }
 
-                when (state) {
-                    is UiState.Loading -> {
-                        if (!binding.swipeRefresh.isRefreshing) {
-                            showLoading()
-                        }
-                    }
-                    is UiState.Success -> {
-                        hideLoading()
-                        if (state.data.isEmpty()) {
-                            showEmptyState()
-                        } else {
-                            hideStateLayout()
-                        }
-                        adapter.submitList(state.data)
-                    }
-                    is UiState.Error -> {
-                        hideLoading()
-                        if (adapter.currentList.isEmpty()) {
-                            showErrorState("加载失败，点击重试") {
-                                viewModel.loadSystemTree()
+                    when (state) {
+                        is UiState.Loading -> {
+                            if (!binding.swipeRefresh.isRefreshing && adapter.currentList.isEmpty()) {
+                                showLoading()
                             }
-                        } else {
-                            showToast(state.message)
+                        }
+                        is UiState.Success -> {
+                            hideLoading()
+                            if (state.data.isEmpty()) {
+                                showEmptyState()
+                            } else {
+                                hideStateLayout()
+                            }
+                            adapter.submitList(state.data)
+                        }
+                        is UiState.Error -> {
+                            hideLoading()
+                            if (adapter.currentList.isEmpty()) {
+                                showErrorState("加载失败，点击重试") {
+                                    viewModel.loadSystemTree()
+                                }
+                            } else {
+                                showToast(state.message)
+                            }
                         }
                     }
                 }
